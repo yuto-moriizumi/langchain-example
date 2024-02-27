@@ -1,7 +1,7 @@
 "use server";
 
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { MODEL } from "./constants";
+import { INDEX_NAME, MODEL } from "./constants";
 import {
   AIMessage,
   HumanMessage,
@@ -10,6 +10,13 @@ import {
 } from "langchain/schema";
 import { ChatMessageHistory } from "langchain/memory";
 import { ChatPromptTemplate, PromptTemplate } from "langchain/prompts";
+import { Pinecone } from "@pinecone-database/pinecone";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { formatDocumentsAsString } from "langchain/util/document";
+import { PineconeStore } from "@langchain/pinecone";
+
+/** 関連情報検索結果のうち、上位何件をプロンプトに利用するか */
+const TOP_K = 3;
 
 type ChatRequest = {
   input: string;
@@ -38,17 +45,22 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
     `You are a person named '${nickname}'. Please answer the questions based on the following information.` +
       `Forcibly associate the answer with the person '${nickname}'.\n` +
       `----
+Related info:
+{context}
+----
 Chat History:
 {chatHistory}
 ----
 Question: {question}`,
   );
 
+  const context = await getRelatedDocs(req.input);
   const prompt = await chatPrompt.format({
     question: req.input,
     chatHistory: await ChatPromptTemplate.fromMessages(
       await history.getMessages(),
     ).format({}),
+    context,
   });
   console.log(prompt);
 
@@ -74,5 +86,18 @@ Question: {question}`,
           throw new Error(`Unknown message type: ${m.type}`);
       }
     });
+  }
+
+  async function getRelatedDocs(text: string) {
+    const vectorStore = new PineconeStore(new OpenAIEmbeddings({}), {
+      pineconeIndex: new Pinecone().index(INDEX_NAME),
+    });
+    try {
+      return formatDocumentsAsString(
+        await vectorStore.similaritySearch(text, TOP_K),
+      );
+    } catch {
+      return "関連情報の取得に失敗しました。";
+    }
   }
 }

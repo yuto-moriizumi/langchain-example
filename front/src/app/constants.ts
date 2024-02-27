@@ -1,4 +1,4 @@
-export const INDEX_NAME = "sample-index";
+export const INDEX_NAME = "langchain-example";
 
 export const MODEL = {
   GPT3: "gpt-3.5-turbo-0125",
