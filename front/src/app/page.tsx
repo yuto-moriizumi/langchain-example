@@ -92,7 +92,3 @@ type Request = {
   input: string;
   history?: StoredMessage[];
 };
-type Response = {
-  output: string;
-  history: StoredMessage[];
-};
