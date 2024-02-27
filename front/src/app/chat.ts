@@ -1,7 +1,15 @@
 "use server";
 
+import { ChatOpenAI } from "langchain/chat_models/openai";
 import { MODEL } from "./constants";
-import type { StoredMessage } from "langchain/schema";
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+  StoredMessage,
+} from "langchain/schema";
+import { ChatMessageHistory } from "langchain/memory";
+import { ChatPromptTemplate, PromptTemplate } from "langchain/prompts";
 
 type ChatRequest = {
   input: string;
@@ -15,15 +23,6 @@ type ChatResponse = {
 
 export async function chat(req: ChatRequest): Promise<ChatResponse> {
   "use server";
-
-  const { ChatOpenAI } = await import("langchain/chat_models/openai");
-  const { ChatMessageHistory } = await import("langchain/memory");
-  const { ChatPromptTemplate, PromptTemplate } = await import(
-    "langchain/prompts"
-  );
-  const { AIMessage, HumanMessage, SystemMessage } = await import(
-    "langchain/schema"
-  );
 
   const model = new ChatOpenAI({
     modelName: req.model ?? MODEL.GPT4,
@@ -52,10 +51,10 @@ Question: {question}`,
     ).format({}),
   });
   console.log(prompt);
-  await history.addUserMessage(req.input);
 
-  const result = await model.predict(prompt);
-  await history.addAIChatMessage(result);
+  await history.addUserMessage(req.input);
+  const result = (await model.invoke(prompt)).content.toString();
+  await history.addAIMessage(result);
 
   return {
     output: result,
