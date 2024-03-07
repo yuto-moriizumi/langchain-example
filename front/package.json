@@ -17,7 +17,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.12",
-    "@pinecone-database/pinecone": "^2.0.1",
+    "@pinecone-database/pinecone": "^2.1.0",
     "axios": "^1.6.7",
     "jsdom": "^24.0.0",
     "langchain": "^0.1.25",
