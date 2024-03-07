@@ -1,4 +1,7 @@
-﻿name: Dependabot auto-merge
+﻿# The auto-merge will be blocked if the validate workflow fails, with using branch protection rules.
+# If the rule is not configured, this workflow will merge every pull request opened by dependabot even if tests fails.
+# Don't forget to configure it!
+name: AutoMerge
 on: pull_request_target
 
 permissions:
@@ -6,20 +9,10 @@ permissions:
   contents: write
 
 jobs:
-  dependabot:
+  auto-merge:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    if: ${{github.actor == 'dependabot[bot]'}}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install dependencies
-        run: npm ci
-      - name: Typecheck
-        run: npm run typecheck -w front
-      - name: Check lint
-        run: npm run lint -w front
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"
         env:
