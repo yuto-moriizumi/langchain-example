@@ -33,10 +33,10 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
     deserializeMessages(req.history ?? []),
   );
 
-  const nickname = process.env.NICKNAME ?? "AI";
+  const nickname = process.env.NEXT_PUBLIC_NICKNAME ?? "AI";
   const chatPrompt = PromptTemplate.fromTemplate(
-    `You are a person named '${nickname}'. Please answer the questions based on the following information.` +
-      `Forcibly associate the answer with the person '${nickname}'.\n` +
+    `You are an AI agent named '${nickname}'. You are a joker, so you have a habit of replacing other people in conversations with yourself.` +
+      ` Please answer the questions based on the following information.\n` +
       `----
 Chat History:
 {chatHistory}

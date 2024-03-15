@@ -16,10 +16,11 @@ import { useEffect, useRef, useState } from "react";
 import { StoredMessage } from "langchain/schema";
 import { chat } from "./chat";
 
-enum User {
-  YOU = "You",
-  AI = "AI",
-}
+const User = {
+  YOU: "You",
+  AI: process.env.NEXT_PUBLIC_NICKNAME ?? "AI",
+};
+type User = (typeof User)[keyof typeof User];
 type Message = { user: User; text: string };
 
 export default function Home() {
@@ -56,7 +57,13 @@ export default function Home() {
           {messages.map((message, index) => (
             <ListItem key={index}>
               <ListItemAvatar>
-                <Avatar />
+                <Avatar
+                  src={
+                    message.user === User.AI
+                      ? "computer_jinkou_chinou.png"
+                      : undefined
+                  }
+                />
               </ListItemAvatar>
               <ListItemText
                 primary={message.user}
