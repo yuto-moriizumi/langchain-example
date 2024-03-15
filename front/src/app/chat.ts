@@ -1,6 +1,5 @@
 "use server";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { MODEL } from "./constants";
 import {
   AIMessage,
@@ -10,6 +9,7 @@ import {
 } from "@langchain/core/messages";
 import { ChatMessageHistory } from "langchain/memory";
 import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
+import { ChatAnthropic } from "@langchain/anthropic";
 
 type ChatRequest = {
   input: string;
@@ -24,9 +24,8 @@ type ChatResponse = {
 export async function chat(req: ChatRequest): Promise<ChatResponse> {
   "use server";
 
-  const model = new ChatOpenAI({
-    modelName: req.model ?? MODEL.GPT4,
-    openAIApiKey: process.env.OPENAI_API_KEY,
+  const model = new ChatAnthropic({
+    modelName: MODEL.SONNET,
   });
 
   const history = new ChatMessageHistory(

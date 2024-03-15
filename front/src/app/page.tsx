@@ -16,9 +16,11 @@ import { useEffect, useRef, useState } from "react";
 import { StoredMessage } from "langchain/schema";
 import { chat } from "./chat";
 
+const nickname = process.env.NEXT_PUBLIC_NICKNAME;
+
 const User = {
   YOU: "You",
-  AI: process.env.NEXT_PUBLIC_NICKNAME ?? "AI",
+  AI: nickname ?? "AI",
 };
 type User = (typeof User)[keyof typeof User];
 type Message = { user: User; text: string };
@@ -51,7 +53,7 @@ export default function Home() {
           LLM Example App
         </Typography>
         <Typography textAlign="center">
-          AI will answer to your questions!
+          AI {nickname ? nickname + " " : ""} will answer to your questions!
         </Typography>
         <List>
           {messages.map((message, index) => (
