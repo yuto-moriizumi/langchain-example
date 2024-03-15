@@ -1,15 +1,15 @@
 "use server";
 
-import { ChatOpenAI } from "langchain/chat_models/openai";
+import { ChatOpenAI } from "@langchain/openai";
 import { MODEL } from "./constants";
 import {
   AIMessage,
   HumanMessage,
   SystemMessage,
   StoredMessage,
-} from "langchain/schema";
+} from "@langchain/core/messages";
 import { ChatMessageHistory } from "langchain/memory";
-import { ChatPromptTemplate, PromptTemplate } from "langchain/prompts";
+import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
 
 type ChatRequest = {
   input: string;
