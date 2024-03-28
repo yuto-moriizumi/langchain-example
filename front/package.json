@@ -18,7 +18,7 @@
     "@emotion/styled": "^11.11.0",
     "@langchain/anthropic": "^0.1.9",
     "@mui/material": "^5.15.14",
-    "@pinecone-database/pinecone": "^2.1.1",
+    "@pinecone-database/pinecone": "^2.2.0",
     "axios": "^1.6.8",
     "jsdom": "^24.0.0",
     "langchain": "^0.1.30",
