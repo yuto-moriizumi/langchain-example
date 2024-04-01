@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.0",
+    "@emotion/styled": "^11.11.5",
     "@langchain/anthropic": "^0.1.9",
     "@mui/material": "^5.15.14",
     "@pinecone-database/pinecone": "^2.2.0",
