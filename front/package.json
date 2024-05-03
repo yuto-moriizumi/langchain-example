@@ -16,7 +16,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@langchain/anthropic": "^0.1.16",
+    "@langchain/anthropic": "^0.1.17",
     "@mui/material": "^5.15.16",
     "@pinecone-database/pinecone": "^2.2.0",
     "axios": "^1.6.8",
