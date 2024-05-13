@@ -21,7 +21,7 @@
     "@pinecone-database/pinecone": "^2.2.1",
     "axios": "^1.6.8",
     "jsdom": "^24.0.0",
-    "langchain": "^0.1.36",
+    "langchain": "^0.1.37",
     "next": "^14.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
