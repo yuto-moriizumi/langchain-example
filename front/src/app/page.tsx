@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { StoredMessage } from "langchain/schema";
 import { chat } from "./chat";
+import Markdown from "markdown-to-jsx";
 
 const nickname = process.env.NEXT_PUBLIC_NICKNAME;
 
@@ -69,7 +70,7 @@ export default function Home() {
               </ListItemAvatar>
               <ListItemText
                 primary={message.user}
-                secondary={message.text}
+                secondary={<Markdown>{message.text}</Markdown>}
                 sx={{ whiteSpace: "pre-wrap" }}
               />
             </ListItem>
