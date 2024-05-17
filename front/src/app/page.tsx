@@ -12,7 +12,7 @@ import {
   Avatar,
   ListItemAvatar,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, KeyboardEvent } from "react";
 import { StoredMessage } from "langchain/schema";
 import { chat } from "./chat";
 import Markdown from "markdown-to-jsx";
@@ -29,11 +29,13 @@ type Message = { user: User; text: string };
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isPending, setisPending] = useState(false);
   const [history, setHistory] = useState<StoredMessage[]>([]);
   const ref = useRef<HTMLUListElement>(null);
 
   const handleSend = async () => {
     setMessages((prev) => [...prev, { user: User.YOU, text: newMessage }]);
+    setisPending(true);
     setNewMessage("");
     const { output, history: newHistory } = await getChat({
       input: newMessage,
@@ -41,11 +43,19 @@ export default function Home() {
     });
     setMessages((prev) => [...prev, { user: User.AI, text: output }]);
     setHistory(newHistory);
+    setisPending(false);
   };
 
   useEffect(() => {
     ref.current?.scroll({ top: 999999, behavior: "smooth" });
   }, [messages]);
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // prevent new line in textarea
+      handleSend();
+    }
+  }
 
   return (
     <Stack justifyContent="space-between" height="100vh">
@@ -70,7 +80,18 @@ export default function Home() {
               </ListItemAvatar>
               <ListItemText
                 primary={message.user}
-                secondary={<Markdown>{message.text}</Markdown>}
+                secondary={
+                  <Markdown
+                    options={{
+                      overrides: {
+                        p: { component: Typography },
+                        span: { component: Typography },
+                      },
+                    }}
+                  >
+                    {message.text}
+                  </Markdown>
+                }
                 sx={{ whiteSpace: "pre-wrap" }}
               />
             </ListItem>
@@ -80,13 +101,19 @@ export default function Home() {
       <Stack direction="row" alignItems="center" padding={2}>
         <TextField
           fullWidth
+          multiline
           variant="outlined"
           value={newMessage}
           placeholder="Input your question here"
           onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          onKeyDown={onKeyDown}
         />
-        <Button variant="contained" onClick={handleSend} sx={{ ml: 2 }}>
+        <Button
+          variant="contained"
+          onClick={handleSend}
+          sx={{ ml: 2 }}
+          disabled={isPending}
+        >
           Submit
         </Button>
       </Stack>
