@@ -1,131 +1,52 @@
 "use client";
 
-import {
-  TextField,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Stack,
-  Box,
-  Typography,
-  Avatar,
-  ListItemAvatar,
-} from "@mui/material";
-import { useEffect, useRef, useState, KeyboardEvent } from "react";
+import { List, Stack, Box, Typography } from "@mui/material";
+import { useState } from "react";
 import { StoredMessage } from "langchain/schema";
 import { chat } from "./chat";
-import Markdown from "markdown-to-jsx";
-
-const nickname = process.env.NEXT_PUBLIC_NICKNAME;
-
-const User = {
-  YOU: "You",
-  AI: nickname ?? "AI",
-};
-type User = (typeof User)[keyof typeof User];
-type Message = { user: User; text: string };
+import { Message } from "@/types";
+import { History } from "@/component/History";
+import { Form } from "@/component/Form";
+import { NICKNAME } from "../constants";
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [isPending, setisPending] = useState(false);
   const [history, setHistory] = useState<StoredMessage[]>([]);
-  const ref = useRef<HTMLUListElement>(null);
+  const [question, setQuestion] = useState<string>();
 
-  const handleSend = async () => {
-    setMessages((prev) => [...prev, { user: User.YOU, text: newMessage }]);
-    setisPending(true);
-    setNewMessage("");
-    const { output, history: newHistory } = await getChat({
-      input: newMessage,
-      history,
-    });
-    setMessages((prev) => [...prev, { user: User.AI, text: output }]);
+  const handleSend = async (content: string) => {
+    setQuestion(content);
+    const { history: newHistory } = await chat({ input: content, history });
+    setQuestion(undefined);
     setHistory(newHistory);
-    setisPending(false);
   };
-
-  useEffect(() => {
-    ref.current?.scroll({ top: 999999, behavior: "smooth" });
-  }, [messages]);
-
-  function onKeyDown(e: KeyboardEvent) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // prevent new line in textarea
-      handleSend();
-    }
-  }
 
   return (
     <Stack justifyContent="space-between" height="100vh">
-      <Box padding={2} ref={ref}>
+      <Box padding={2}>
         <Typography variant="h3" textAlign="center">
           LLM Example App
         </Typography>
         <Typography textAlign="center">
-          AI {nickname ? nickname + " " : ""} will answer to your questions!
+          AI {NICKNAME ? NICKNAME + " " : ""} will answer to your questions!
         </Typography>
         <List>
-          {messages.map((message, index) => (
-            <ListItem key={index}>
-              <ListItemAvatar>
-                <Avatar
-                  src={
-                    message.user === User.AI
-                      ? "computer_jinkou_chinou.png"
-                      : undefined
-                  }
-                />
-              </ListItemAvatar>
-              <ListItemText
-                primary={message.user}
-                secondary={
-                  <Markdown
-                    options={{
-                      overrides: {
-                        p: { component: Typography },
-                        span: { component: Typography },
-                      },
-                    }}
-                  >
-                    {message.text}
-                  </Markdown>
-                }
-                sx={{ whiteSpace: "pre-wrap" }}
-              />
-            </ListItem>
-          ))}
+          <History messages={getMessages(history, question)} />
         </List>
       </Box>
-      <Stack direction="row" alignItems="center" padding={2}>
-        <TextField
-          fullWidth
-          multiline
-          variant="outlined"
-          value={newMessage}
-          placeholder="Input your question here"
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={onKeyDown}
-        />
-        <Button
-          variant="contained"
-          onClick={handleSend}
-          sx={{ ml: 2 }}
-          disabled={isPending}
-        >
-          Submit
-        </Button>
-      </Stack>
+      <Form onSubmit={handleSend} />
     </Stack>
   );
 }
 
-async function getChat(req: Request) {
-  return chat(req);
+function getMessages(history: StoredMessage[], question?: string): Message[] {
+  if (question === undefined) return convertMessage(history);
+  return [...convertMessage(history), { type: "human", content: question }];
 }
 
-type Request = {
-  input: string;
-  history?: StoredMessage[];
-};
+function convertMessage(messages: StoredMessage[]): Message[] {
+  return messages.map((m) => {
+    if (m.type === "human" || m.type === "ai")
+      return { type: m.type, content: m.data.content };
+    throw new Error(`Unknown message type: ${m.type}`);
+  });
+}
