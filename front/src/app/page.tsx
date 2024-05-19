@@ -8,16 +8,17 @@ import { Message } from "@/types";
 import { History } from "@/component/History";
 import { Form } from "@/component/Form";
 import { NICKNAME } from "../constants";
+import { useHistory } from "./useHistory";
 
 export default function Home() {
-  const [history, setHistory] = useState<StoredMessage[]>([]);
+  const { history, saveHistory } = useHistory();
   const [question, setQuestion] = useState<string>();
 
   const handleSend = async (content: string) => {
     setQuestion(content);
     const { history: newHistory } = await chat({ input: content, history });
     setQuestion(undefined);
-    setHistory(newHistory);
+    saveHistory(newHistory);
   };
 
   return (
