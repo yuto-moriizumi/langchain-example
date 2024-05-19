@@ -1,53 +1,99 @@
 "use client";
 
-import { List, Stack, Box, Typography } from "@mui/material";
-import { useState } from "react";
+import {
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  ListItemText,
+  MenuItem,
+  MenuList,
+  Stack,
+} from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 import { StoredMessage } from "langchain/schema";
-import { chat } from "./chat";
-import { Message } from "@/types";
-import { History } from "@/component/History";
-import { Form } from "@/component/Form";
-import { NICKNAME } from "../constants";
 import { useHistory } from "./useHistory";
+import { Tab } from "@/component/Tab";
+import { DRAWER_WIDTH } from "@/constants";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
-  const { history, saveHistory } = useHistory();
-  const [question, setQuestion] = useState<string>();
+  const { sessions, saveSession, deleteSession } = useHistory();
+  const [currentTab, setCurrentTab] = useState<string>();
 
-  const handleSend = async (content: string) => {
-    setQuestion(content);
-    const { history: newHistory } = await chat({ input: content, history });
-    setQuestion(undefined);
-    saveHistory(newHistory);
-  };
+  const addSession = useCallback(() => {
+    const id = uuidv4();
+    saveSession(id, []);
+    setCurrentTab(id);
+  }, [saveSession]);
+
+  function removeSession(id: string) {
+    if (id === currentTab) setCurrentTab(Object.keys(sessions)[0]);
+    deleteSession(id);
+  }
+
+  useEffect(() => {
+    if (Object.keys(sessions).length === 0) {
+      addSession();
+    }
+  }, [addSession, sessions]);
 
   return (
-    <Stack justifyContent="space-between" height="100vh">
-      <Box padding={2}>
-        <Typography variant="h3" textAlign="center">
-          LLM Example App
-        </Typography>
-        <Typography textAlign="center">
-          AI {NICKNAME ? NICKNAME + " " : ""} will answer to your questions!
-        </Typography>
-        <List>
-          <History messages={getMessages(history, question)} />
-        </List>
-      </Box>
-      <Form onSubmit={handleSend} />
+    <Stack direction="row">
+      <Drawer
+        variant="permanent"
+        anchor="left"
+        sx={{
+          width: DRAWER_WIDTH,
+          "& .MuiDrawer-paper": {
+            width: DRAWER_WIDTH,
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        <MenuList>
+          {Object.entries(sessions).map(([id, messages]) => (
+            <MenuItem
+              key={id}
+              onClick={() => setCurrentTab(id)}
+              selected={id === currentTab}
+            >
+              <ListItemText
+                primaryTypographyProps={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                }}
+              >
+                {getTabName(messages)}
+              </ListItemText>
+              <IconButton
+                onClick={(e) => (e.stopPropagation(), removeSession(id))}
+              >
+                <DeleteForeverIcon />
+              </IconButton>
+            </MenuItem>
+          ))}
+        </MenuList>
+        <Box textAlign="center">
+          <Button variant="contained" onClick={addSession}>
+            New Chat
+          </Button>
+        </Box>
+      </Drawer>
+      {Object.entries(sessions).map(([id, session]) => (
+        <Tab
+          key={id}
+          open={id === currentTab}
+          history={session}
+          saveHistory={(messages) => saveSession(id, messages)}
+        />
+      ))}
     </Stack>
   );
 }
 
-function getMessages(history: StoredMessage[], question?: string): Message[] {
-  if (question === undefined) return convertMessage(history);
-  return [...convertMessage(history), { type: "human", content: question }];
-}
-
-function convertMessage(messages: StoredMessage[]): Message[] {
-  return messages.map((m) => {
-    if (m.type === "human" || m.type === "ai")
-      return { type: m.type, content: m.data.content };
-    throw new Error(`Unknown message type: ${m.type}`);
-  });
+function getTabName(session: StoredMessage[]): string {
+  if (session.length === 0) return "New chat";
+  return session[0].data.content;
 }

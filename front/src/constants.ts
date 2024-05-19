@@ -9,3 +9,4 @@ export const MODEL = {
 } as const;
 
 export const NICKNAME = process.env.NEXT_PUBLIC_NICKNAME;
+export const DRAWER_WIDTH = 200;
