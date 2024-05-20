@@ -33,8 +33,9 @@ export function History(props: { messages: Message[] }) {
             {message.content}
           </Markdown>
         }
-        sx={{ whiteSpace: "pre-wrap" }}
+        sx={{ whiteSpace: "pre-wrap", overflowWrap: "break-word" }}
       />
+      <Typography></Typography>
     </ListItem>
   ));
 }
