@@ -17,7 +17,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
-  const { sessions, saveSession, deleteSession } = useHistory();
+  const { sessions, saveSession, deleteSession, isLoading } = useHistory();
   const [currentTab, setCurrentTab] = useState<string>();
 
   const addSession = useCallback(() => {
@@ -31,11 +31,18 @@ export default function Home() {
     deleteSession(id);
   }
 
+  // add default session if no session exists
   useEffect(() => {
-    if (Object.keys(sessions).length === 0) {
-      addSession();
-    }
-  }, [addSession, sessions]);
+    if (isLoading) return;
+    if (Object.keys(sessions).length === 0) addSession();
+  }, [addSession, isLoading, sessions]);
+
+  // select first tab if current tab is not found
+  useEffect(() => {
+    if (isLoading || currentTab) return;
+    const ids = Object.keys(sessions);
+    if (ids.length > 0) setCurrentTab(ids[0]);
+  }, [currentTab, isLoading, sessions]);
 
   return (
     <Grid container>
@@ -64,15 +71,16 @@ export default function Home() {
           </Button>
         </Box>
       </Grid>
-      {Object.entries(sessions).map(([id, session]) => (
-        <Grid item sm={9} md={10} key={id}>
+      <Grid item sm={9} md={10}>
+        {Object.entries(sessions).map(([id, session]) => (
           <Tab
+            key={id}
             open={id === currentTab}
             history={session}
             saveHistory={(messages) => saveSession(id, messages)}
           />
-        </Grid>
-      ))}
+        ))}
+      </Grid>
     </Grid>
   );
 }

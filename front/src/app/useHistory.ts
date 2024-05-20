@@ -5,17 +5,22 @@ import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 const KEY = "history";
 
+const historyForHydration: History = {
+  version: "1",
+  sessions: {},
+  isHydrating: true,
+};
 const initialHistory: History = {
   version: "1",
   sessions: {},
+  isHydrating: false,
 };
-const initialHistoryJson = JSON.stringify(initialHistory);
 
 export function useHistory() {
   const json = useSyncExternalStore(
     subscribe,
-    () => localStorage.getItem(KEY) ?? initialHistoryJson,
-    () => initialHistoryJson,
+    () => localStorage.getItem(KEY) ?? JSON.stringify(initialHistory),
+    () => JSON.stringify(historyForHydration),
   );
   const history = useMemo<History>(() => JSON.parse(json), [json]);
   const saveSession = useCallback(
@@ -34,7 +39,12 @@ export function useHistory() {
     },
     [history],
   );
-  return { sessions: history.sessions, saveSession, deleteSession };
+  return {
+    sessions: history.sessions,
+    saveSession,
+    deleteSession,
+    isLoading: history.isHydrating,
+  };
 }
 
 const subscribe = (callback: () => void) => {
@@ -45,6 +55,7 @@ const subscribe = (callback: () => void) => {
 };
 export type History = {
   version: "1";
+  isHydrating: boolean;
   sessions: {
     [key: string]: StoredMessage[];
   };
