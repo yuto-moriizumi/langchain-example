@@ -7,3 +7,6 @@ export const MODEL = {
   OPUS: "claude-3-opus-20240229",
   SONNET: "claude-3-sonnet-20240229",
 } as const;
+
+export const NICKNAME = process.env.NEXT_PUBLIC_NICKNAME;
+export const DRAWER_WIDTH = 200;

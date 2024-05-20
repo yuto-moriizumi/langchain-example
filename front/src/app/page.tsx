@@ -1,131 +1,99 @@
 "use client";
 
 import {
-  TextField,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Stack,
   Box,
-  Typography,
-  Avatar,
-  ListItemAvatar,
+  Button,
+  Drawer,
+  IconButton,
+  ListItemText,
+  MenuItem,
+  MenuList,
+  Stack,
 } from "@mui/material";
-import { useEffect, useRef, useState, KeyboardEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StoredMessage } from "langchain/schema";
-import { chat } from "./chat";
-import Markdown from "markdown-to-jsx";
-
-const nickname = process.env.NEXT_PUBLIC_NICKNAME;
-
-const User = {
-  YOU: "You",
-  AI: nickname ?? "AI",
-};
-type User = (typeof User)[keyof typeof User];
-type Message = { user: User; text: string };
+import { useHistory } from "./useHistory";
+import { Tab } from "@/component/Tab";
+import { DRAWER_WIDTH } from "@/constants";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [isPending, setisPending] = useState(false);
-  const [history, setHistory] = useState<StoredMessage[]>([]);
-  const ref = useRef<HTMLUListElement>(null);
+  const { sessions, saveSession, deleteSession } = useHistory();
+  const [currentTab, setCurrentTab] = useState<string>();
 
-  const handleSend = async () => {
-    setMessages((prev) => [...prev, { user: User.YOU, text: newMessage }]);
-    setisPending(true);
-    setNewMessage("");
-    const { output, history: newHistory } = await getChat({
-      input: newMessage,
-      history,
-    });
-    setMessages((prev) => [...prev, { user: User.AI, text: output }]);
-    setHistory(newHistory);
-    setisPending(false);
-  };
+  const addSession = useCallback(() => {
+    const id = uuidv4();
+    saveSession(id, []);
+    setCurrentTab(id);
+  }, [saveSession]);
 
-  useEffect(() => {
-    ref.current?.scroll({ top: 999999, behavior: "smooth" });
-  }, [messages]);
-
-  function onKeyDown(e: KeyboardEvent) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // prevent new line in textarea
-      handleSend();
-    }
+  function removeSession(id: string) {
+    if (id === currentTab) setCurrentTab(Object.keys(sessions)[0]);
+    deleteSession(id);
   }
 
+  useEffect(() => {
+    if (Object.keys(sessions).length === 0) {
+      addSession();
+    }
+  }, [addSession, sessions]);
+
   return (
-    <Stack justifyContent="space-between" height="100vh">
-      <Box padding={2} ref={ref}>
-        <Typography variant="h3" textAlign="center">
-          LLM Example App
-        </Typography>
-        <Typography textAlign="center">
-          AI {nickname ? nickname + " " : ""} will answer to your questions!
-        </Typography>
-        <List>
-          {messages.map((message, index) => (
-            <ListItem key={index}>
-              <ListItemAvatar>
-                <Avatar
-                  src={
-                    message.user === User.AI
-                      ? "computer_jinkou_chinou.png"
-                      : undefined
-                  }
-                />
-              </ListItemAvatar>
+    <Stack direction="row">
+      <Drawer
+        variant="permanent"
+        anchor="left"
+        sx={{
+          width: DRAWER_WIDTH,
+          "& .MuiDrawer-paper": {
+            width: DRAWER_WIDTH,
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        <MenuList>
+          {Object.entries(sessions).map(([id, messages]) => (
+            <MenuItem
+              key={id}
+              onClick={() => setCurrentTab(id)}
+              selected={id === currentTab}
+            >
               <ListItemText
-                primary={message.user}
-                secondary={
-                  <Markdown
-                    options={{
-                      overrides: {
-                        p: { component: Typography },
-                        span: { component: Typography },
-                      },
-                    }}
-                  >
-                    {message.text}
-                  </Markdown>
-                }
-                sx={{ whiteSpace: "pre-wrap" }}
-              />
-            </ListItem>
+                primaryTypographyProps={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                }}
+              >
+                {getTabName(messages)}
+              </ListItemText>
+              <IconButton
+                onClick={(e) => (e.stopPropagation(), removeSession(id))}
+              >
+                <DeleteForeverIcon />
+              </IconButton>
+            </MenuItem>
           ))}
-        </List>
-      </Box>
-      <Stack direction="row" alignItems="center" padding={2}>
-        <TextField
-          fullWidth
-          multiline
-          variant="outlined"
-          value={newMessage}
-          placeholder="Input your question here"
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={onKeyDown}
+        </MenuList>
+        <Box textAlign="center">
+          <Button variant="contained" onClick={addSession}>
+            New Chat
+          </Button>
+        </Box>
+      </Drawer>
+      {Object.entries(sessions).map(([id, session]) => (
+        <Tab
+          key={id}
+          open={id === currentTab}
+          history={session}
+          saveHistory={(messages) => saveSession(id, messages)}
         />
-        <Button
-          variant="contained"
-          onClick={handleSend}
-          sx={{ ml: 2 }}
-          disabled={isPending}
-        >
-          Submit
-        </Button>
-      </Stack>
+      ))}
     </Stack>
   );
 }
 
-async function getChat(req: Request) {
-  return chat(req);
+function getTabName(session: StoredMessage[]): string {
+  if (session.length === 0) return "New chat";
+  return session[0].data.content;
 }
-
-type Request = {
-  input: string;
-  history?: StoredMessage[];
-};

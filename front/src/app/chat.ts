@@ -1,6 +1,6 @@
 "use server";
 
-import { MODEL } from "./constants";
+import { MODEL } from "../constants";
 import {
   AIMessage,
   HumanMessage,
