@@ -3,18 +3,16 @@
 import {
   Box,
   Button,
-  Drawer,
+  Grid,
   IconButton,
   ListItemText,
   MenuItem,
   MenuList,
-  Stack,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { StoredMessage } from "langchain/schema";
 import { useHistory } from "./useHistory";
 import { Tab } from "@/component/Tab";
-import { DRAWER_WIDTH } from "@/constants";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { v4 as uuidv4 } from "uuid";
 
@@ -40,18 +38,8 @@ export default function Home() {
   }, [addSession, sessions]);
 
   return (
-    <Stack direction="row">
-      <Drawer
-        variant="permanent"
-        anchor="left"
-        sx={{
-          width: DRAWER_WIDTH,
-          "& .MuiDrawer-paper": {
-            width: DRAWER_WIDTH,
-            boxSizing: "border-box",
-          },
-        }}
-      >
+    <Grid container>
+      <Grid item sm={3} md={2} borderRight="1px lightgray solid">
         <MenuList>
           {Object.entries(sessions).map(([id, messages]) => (
             <MenuItem
@@ -59,12 +47,7 @@ export default function Home() {
               onClick={() => setCurrentTab(id)}
               selected={id === currentTab}
             >
-              <ListItemText
-                primaryTypographyProps={{
-                  textOverflow: "ellipsis",
-                  overflow: "hidden",
-                }}
-              >
+              <ListItemText primaryTypographyProps={{ noWrap: true }}>
                 {getTabName(messages)}
               </ListItemText>
               <IconButton
@@ -80,16 +63,17 @@ export default function Home() {
             New Chat
           </Button>
         </Box>
-      </Drawer>
+      </Grid>
       {Object.entries(sessions).map(([id, session]) => (
-        <Tab
-          key={id}
-          open={id === currentTab}
-          history={session}
-          saveHistory={(messages) => saveSession(id, messages)}
-        />
+        <Grid item sm={9} md={10} key={id}>
+          <Tab
+            open={id === currentTab}
+            history={session}
+            saveHistory={(messages) => saveSession(id, messages)}
+          />
+        </Grid>
       ))}
-    </Stack>
+    </Grid>
   );
 }
 
