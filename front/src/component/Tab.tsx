@@ -2,7 +2,7 @@
 
 import { List, Stack, Box, Typography } from "@mui/material";
 import { useState } from "react";
-import { StoredMessage } from "langchain/schema";
+import { StoredMessage } from "@langchain/core/messages";
 import { Message } from "@/types";
 import { History } from "@/component/History";
 import { Form } from "@/component/Form";
