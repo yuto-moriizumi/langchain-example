@@ -10,7 +10,7 @@ import {
   MenuList,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import { StoredMessage } from "langchain/schema";
+import { StoredMessage } from "@langchain/core/messages";
 import { useHistory } from "./useHistory";
 import { Tab } from "@/component/Tab";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";

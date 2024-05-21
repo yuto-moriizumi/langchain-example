@@ -1,6 +1,6 @@
 "use client";
 
-import { StoredMessage } from "langchain/schema";
+import { StoredMessage } from "@langchain/core/messages";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 const KEY = "history";

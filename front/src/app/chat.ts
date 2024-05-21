@@ -6,8 +6,9 @@ import {
   HumanMessage,
   SystemMessage,
   StoredMessage,
+  BaseMessage,
 } from "@langchain/core/messages";
-import { ChatMessageHistory } from "langchain/memory";
+import { ChatMessageHistory } from "langchain/memory/index";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI, DallEAPIWrapper } from "@langchain/openai";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
@@ -15,7 +16,6 @@ import {
   HumanMessagePromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
-import { BaseMessage } from "langchain/schema";
 
 type ChatRequest = {
   input: string;
