@@ -16,6 +16,7 @@ import {
   HumanMessagePromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
+import { DuckDuckGoSearch } from "@langchain/community/tools/duckduckgo_search";
 
 type ChatRequest = {
   input: string;
@@ -31,6 +32,7 @@ const imageGenerationTool = new DallEAPIWrapper({
   model: "dall-e-2",
   size: "256x256",
 });
+const searchTool = new DuckDuckGoSearch({ maxResults: 1 });
 const nickname = process.env.NEXT_PUBLIC_NICKNAME ?? "AI";
 const llm = new ChatOpenAI({ modelName: MODEL.GPT4O });
 
@@ -63,13 +65,13 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
 
   const agent = await createOpenAIFunctionsAgent({
     llm,
-    tools: [imageGenerationTool],
+    tools: [imageGenerationTool, searchTool],
     prompt,
   });
 
   const agentExecutor = new AgentExecutor({
     agent,
-    tools: [imageGenerationTool],
+    tools: [imageGenerationTool, searchTool],
     verbose: true,
   });
 
