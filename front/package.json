@@ -19,7 +19,7 @@
     "@langchain/community": "^0.2.20",
     "@langchain/openai": "^0.2.4",
     "@mui/icons-material": "^5.16.4",
-    "@mui/material": "^5.16.4",
+    "@mui/material": "^5.16.5",
     "duck-duck-scrape": "^2.2.5",
     "langchain": "^0.2.10",
     "markdown-to-jsx": "^7.4.7",
