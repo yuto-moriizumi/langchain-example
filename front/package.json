@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
+    "@emotion/styled": "^11.13.5",
     "@langchain/community": "^0.3.15",
     "@langchain/openai": "^0.3.14",
     "@mui/icons-material": "^6.1.7",
