@@ -17,7 +17,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@langchain/community": "^0.3.37",
-    "@langchain/openai": "^0.3.16",
+    "@langchain/openai": "^0.5.0",
     "@mui/icons-material": "^7.0.0",
     "@mui/material": "^6.4.7",
     "duck-duck-scrape": "^2.2.7",
