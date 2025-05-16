@@ -11,7 +11,7 @@ import {
 import { ChatMessageHistory } from "langchain/memory";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI, DallEAPIWrapper } from "@langchain/openai";
-import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import {
   HumanMessagePromptTemplate,
   MessagesPlaceholder,
@@ -20,7 +20,7 @@ import { DuckDuckGoSearch } from "@langchain/community/tools/duckduckgo_search";
 
 type ChatRequest = {
   input: string;
-  model?: typeof MODEL[keyof typeof MODEL]; // typeof MODELの要素の型に変更
+  model?: (typeof MODEL)[keyof typeof MODEL]; // typeof MODELの要素の型に変更
   history?: StoredMessage[];
 };
 type ChatResponse = {
@@ -29,13 +29,11 @@ type ChatResponse = {
 };
 
 const imageGenerationTool = new DallEAPIWrapper({
-  model: "dall-e-2",
-  size: "256x256",
+  model: "dall-e-3",
+  size: "1024x1024",
 });
 const searchTool = new DuckDuckGoSearch({ maxResults: 1 });
 const nickname = process.env.NEXT_PUBLIC_NICKNAME ?? "AI";
-// llmの初期化はchat関数内で行うように変更
-// const llm = new ChatOpenAI({ modelName: MODEL["gpt-4.1-mini"].name });
 
 type Schema = {
   input: string;
@@ -68,7 +66,7 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
   const modelName = req.model ? req.model.name : MODEL["gpt-4.1-mini"].name;
   const llm = new ChatOpenAI({ modelName });
 
-  const agent = await createOpenAIFunctionsAgent({
+  const agent = createToolCallingAgent({
     llm,
     tools: [imageGenerationTool, searchTool],
     prompt,
@@ -84,7 +82,7 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
       input: req.input,
       chat_history: await history.getMessages(),
     } satisfies InvokeSchema,
-    { recursionLimit: 1 }, // save my money from too much recursion
+    { recursionLimit: 25 }, // save my money from too much recursion
   )) as { output: string };
 
   await history.addUserMessage(req.input);
