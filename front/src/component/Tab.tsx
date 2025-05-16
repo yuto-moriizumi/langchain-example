@@ -1,6 +1,14 @@
 "use client";
 
-import { List, Stack, Box, Typography } from "@mui/material";
+import {
+  List,
+  Stack,
+  Box,
+  Typography,
+  useMediaQuery,
+  Theme,
+  useTheme,
+} from "@mui/material";
 import { useState } from "react";
 import { StoredMessage } from "@langchain/core/messages";
 import { Message } from "@/types";
@@ -16,6 +24,8 @@ export function Tab(props: {
 }) {
   const { open, history, saveHistory } = props;
   const [question, setQuestion] = useState<string>();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSend = async (content: string) => {
     setQuestion(content);
@@ -31,13 +41,28 @@ export function Tab(props: {
       flexGrow={1}
       display={open ? undefined : "none"}
     >
-      <Box padding={2}>
-        <Typography variant="h3" textAlign="center">
-          LLM Example App
-        </Typography>
-        <Typography textAlign="center">
-          AI {NICKNAME ? NICKNAME + " " : ""} will answer to your questions!
-        </Typography>
+      <Box
+        padding={2}
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          // Adjust paddingBottom to prevent content from being hidden by the Form
+          // The Form has padding={2} (16px top/bottom) and some intrinsic height.
+          // Let's assume an approximate height of 80px for the Form for now.
+          // This might need fine-tuning.
+          paddingBottom: "80px",
+        }}
+      >
+        {!isMobile && (
+          <>
+            <Typography variant="h3" textAlign="center">
+              LLM Example App
+            </Typography>
+            <Typography textAlign="center">
+              AI {NICKNAME ? NICKNAME + " " : ""} will answer to your questions!
+            </Typography>
+          </>
+        )}
         <List>
           <History messages={getMessages(history, question)} />
         </List>

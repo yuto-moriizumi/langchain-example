@@ -23,7 +23,22 @@ export function Form(props: { onSubmit: (value: string) => Promise<void> }) {
   }
 
   return (
-    <Stack direction="row" alignItems="center" padding={2}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      padding={2}
+      sx={(theme) => ({
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        bgcolor: "background.paper",
+        zIndex: 1, // 他の要素より手前に表示
+        [theme.breakpoints.up("sm")]: {
+          left: `${240}px`, // drawerWidth
+        },
+      })}
+    >
       <TextField
         fullWidth
         multiline
