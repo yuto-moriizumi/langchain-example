@@ -14,7 +14,7 @@ import { StoredMessage } from "@langchain/core/messages";
 import { Message } from "@/types";
 import { History } from "@/component/History";
 import { Form } from "@/component/Form";
-import { NICKNAME } from "../constants";
+import { MODEL, NICKNAME } from "../constants"; // MODELをインポート
 import { chat } from "@/app/chat";
 
 export function Tab(props: {
@@ -27,9 +27,16 @@ export function Tab(props: {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleSend = async (content: string) => {
+  // handleSendのシグネチャを更新し、modelKeyを受け取る
+  const handleSend = async (content: string, modelKey: keyof typeof MODEL) => {
     setQuestion(content);
-    const { history: newHistory } = await chat({ input: content, history });
+    // 選択されたモデルオブジェクトをchat関数に渡す
+    const selectedModelObject = MODEL[modelKey];
+    const { history: newHistory } = await chat({
+      input: content,
+      history,
+      model: selectedModelObject,
+    });
     setQuestion(undefined);
     saveHistory(newHistory);
   };
@@ -37,20 +44,13 @@ export function Tab(props: {
   return (
     <Stack
       justifyContent="space-between"
-      height="100vh"
-      flexGrow={1}
+      height="100%"
       display={open ? undefined : "none"}
     >
       <Box
         padding={2}
         sx={{
-          flexGrow: 1,
           overflowY: "auto",
-          // Adjust paddingBottom to prevent content from being hidden by the Form
-          // The Form has padding={2} (16px top/bottom) and some intrinsic height.
-          // Let's assume an approximate height of 80px for the Form for now.
-          // This might need fine-tuning.
-          paddingBottom: "80px",
         }}
       >
         {!isMobile && (

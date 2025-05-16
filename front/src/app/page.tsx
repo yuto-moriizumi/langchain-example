@@ -177,7 +177,6 @@ export default function Home() {
           // p: 3, // Remove default padding if not needed
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           // overflow: "auto", // Removed as Tab component will handle its own scroll
-          height: "100%", // Ensure main content takes full height
           paddingTop: { xs: "64px", sm: "0" }, // Adjust for AppBar height on mobile
           // paddingBottom: "80px", // Removed as Tab component's paddingBottom will handle this
         }}

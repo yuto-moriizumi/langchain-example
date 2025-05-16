@@ -20,7 +20,7 @@ import { DuckDuckGoSearch } from "@langchain/community/tools/duckduckgo_search";
 
 type ChatRequest = {
   input: string;
-  model?: (typeof MODEL)[keyof typeof MODEL];
+  model?: typeof MODEL[keyof typeof MODEL]; // typeof MODELの要素の型に変更
   history?: StoredMessage[];
 };
 type ChatResponse = {
@@ -34,7 +34,8 @@ const imageGenerationTool = new DallEAPIWrapper({
 });
 const searchTool = new DuckDuckGoSearch({ maxResults: 1 });
 const nickname = process.env.NEXT_PUBLIC_NICKNAME ?? "AI";
-const llm = new ChatOpenAI({ modelName: MODEL.GPT4O });
+// llmの初期化はchat関数内で行うように変更
+// const llm = new ChatOpenAI({ modelName: MODEL["gpt-4.1-mini"].name });
 
 type Schema = {
   input: string;
@@ -62,6 +63,10 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
   const history = new ChatMessageHistory(
     deserializeMessages(req.history ?? []),
   );
+
+  // リクエストでモデルが指定されていればそれを使用し、なければデフォルトを使用
+  const modelName = req.model ? req.model.name : MODEL["gpt-4.1-mini"].name;
+  const llm = new ChatOpenAI({ modelName });
 
   const agent = await createOpenAIFunctionsAgent({
     llm,
