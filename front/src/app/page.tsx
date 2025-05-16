@@ -47,9 +47,7 @@ export default function Home() {
   return (
     <Grid container>
       <Grid
-        item
-        sm={3}
-        md={2}
+        size={{ sm: 3, md: 2 }}
         borderRight="1px lightgray solid"
         overflow="scroll"
         maxHeight="100vh"
@@ -78,7 +76,7 @@ export default function Home() {
           </Button>
         </Box>
       </Grid>
-      <Grid item sm={9} md={10} overflow="scroll" maxHeight="100vh">
+      <Grid size={{ sm: 9, md: 10 }} overflow="scroll" maxHeight="100vh">
         {Object.entries(sessions).map(([id, session]) => (
           <Tab
             key={id}
