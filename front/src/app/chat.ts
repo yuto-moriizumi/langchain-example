@@ -72,7 +72,6 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
   const agentExecutor = new AgentExecutor({
     agent,
     tools: [imageGenerationTool, searchTool],
-    verbose: true,
   });
 
   const { output } = (await agentExecutor.invoke(
