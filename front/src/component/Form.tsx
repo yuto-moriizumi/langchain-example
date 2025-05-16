@@ -9,6 +9,7 @@ import {
   FormControl,
   InputLabel,
   SelectChangeEvent,
+  CircularProgress, // CircularProgress をインポート
 } from "@mui/material";
 import { useState, KeyboardEvent } from "react";
 import { MODEL } from "../constants"; // MODELをインポート
@@ -94,7 +95,7 @@ export function Form(props: {
           onClick={handleSend}
           disabled={isPending || !value.trim()} // メッセージが空の場合も無効化
         >
-          Submit
+          {isPending ? <CircularProgress size={24} /> : "Submit"}
         </Button>
       </Stack>
     </Stack>
