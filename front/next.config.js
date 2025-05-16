@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["langchain"],
-  },
+  serverExternalPackages: ["langchain"],
 };
 
 module.exports = nextConfig;
