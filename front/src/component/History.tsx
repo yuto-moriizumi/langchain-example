@@ -26,7 +26,6 @@ export function History(props: { messages: Message[] }) {
             options={{
               overrides: {
                 p: { component: Typography },
-                span: { component: Typography },
               },
             }}
           >
