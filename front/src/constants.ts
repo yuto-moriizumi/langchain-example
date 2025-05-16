@@ -26,6 +26,6 @@ export const MODEL = {
   //   name: "claude-3-sonnet-20240229",
   //   desc: "A balanced model from Anthropic, ideal for enterprise workloads and scaled AI deployments.",
   // },
-} as const;
+} as const satisfies Record<string, Model>;
 
 export const NICKNAME = process.env.NEXT_PUBLIC_NICKNAME;

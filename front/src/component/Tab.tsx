@@ -6,7 +6,6 @@ import {
   Box,
   Typography,
   useMediaQuery,
-  Theme,
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
