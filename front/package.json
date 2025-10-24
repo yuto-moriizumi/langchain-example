@@ -22,7 +22,7 @@
     "@mui/material": "^7.3.4",
     "duck-duck-scrape": "^2.2.7",
     "langchain": "^0.3.36",
-    "markdown-to-jsx": "^7.7.16",
+    "markdown-to-jsx": "^7.7.17",
     "next": "^15.5.6",
     "react": "^19.0.0",
     "react-dom": "^19.2.0",
