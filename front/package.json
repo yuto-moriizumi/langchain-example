@@ -16,7 +16,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@langchain/community": "^1.0.0",
+    "@langchain/community": "^1.0.2",
     "@langchain/openai": "^1.0.0",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.4",
