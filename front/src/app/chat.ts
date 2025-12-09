@@ -8,10 +8,10 @@ import {
   StoredMessage,
   BaseMessage,
 } from "@langchain/core/messages";
-import { ChatMessageHistory } from "langchain/memory";
+import { ChatMessageHistory } from "@langchain/classic/memory";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI, DallEAPIWrapper } from "@langchain/openai";
-import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
+import { AgentExecutor, createToolCallingAgent } from "@langchain/classic/agents";
 import {
   HumanMessagePromptTemplate,
   MessagesPlaceholder,
