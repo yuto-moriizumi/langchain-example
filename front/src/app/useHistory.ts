@@ -25,16 +25,24 @@ export function useHistory() {
   const history = useMemo<History>(() => JSON.parse(json), [json]);
   const saveSession = useCallback(
     (id: string, messages: StoredMessage[]) => {
-      history.sessions[id] = messages;
-      localStorage.setItem(KEY, JSON.stringify(history));
+      const updatedHistory = {
+        ...history,
+        sessions: { ...history.sessions, [id]: messages },
+      };
+      localStorage.setItem(KEY, JSON.stringify(updatedHistory));
       window.dispatchEvent(new Event("storage"));
     },
     [history],
   );
   const deleteSession = useCallback(
     (id: string) => {
-      delete history.sessions[id];
-      localStorage.setItem(KEY, JSON.stringify(history));
+      const updatedSessions = { ...history.sessions };
+      delete updatedSessions[id];
+      const updatedHistory = {
+        ...history,
+        sessions: updatedSessions,
+      };
+      localStorage.setItem(KEY, JSON.stringify(updatedHistory));
       window.dispatchEvent(new Event("storage"));
     },
     [history],

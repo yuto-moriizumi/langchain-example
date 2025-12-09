@@ -45,18 +45,16 @@ export default function Home() {
     deleteSession(id);
   }
 
-  // add default session if no session exists
-  useEffect(() => {
-    if (isLoading) return;
-    if (Object.keys(sessions).length === 0) addSession();
-  }, [addSession, isLoading, sessions]);
+  // Derive currentTab from sessions - select first available tab if current is not found
+  const sessionIds = Object.keys(sessions);
+  const validCurrentTab = currentTab && sessionIds.includes(currentTab) ? currentTab : sessionIds[0];
 
-  // select first tab if current tab is not found
-  useEffect(() => {
-    if (isLoading || currentTab) return;
-    const ids = Object.keys(sessions);
-    if (ids.length > 0) setCurrentTab(ids[0]);
-  }, [currentTab, isLoading, sessions]);
+  // Initialize with default session if none exists
+  if (!isLoading && sessionIds.length === 0) {
+    const id = uuidv4();
+    saveSession(id, []);
+    return null;
+  }
 
   const drawerWidth = 240;
 
@@ -70,13 +68,13 @@ export default function Home() {
     >
       <MenuList sx={{ flexGrow: 1 }}>
         {Object.entries(sessions).map(([id, messages]) => (
-          <MenuItem
-            key={id}
-            onClick={() => {
-              setCurrentTab(id);
-              if (isMobile) setMobileOpen(false);
-            }}
-            selected={id === currentTab}
+           <MenuItem
+             key={id}
+             onClick={() => {
+               setCurrentTab(id);
+               if (isMobile) setMobileOpen(false);
+             }}
+             selected={id === validCurrentTab}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }}>
               {getTabName(messages)}
@@ -182,14 +180,14 @@ export default function Home() {
         }}
       >
         {/* <Toolbar sx={{ display: { xs: "block", sm: "none" } }} />  This Toolbar is for spacing if AppBar is not fixed */}
-        {Object.entries(sessions).map(([id, session]) => (
-          <Tab
-            key={id}
-            open={id === currentTab}
-            history={session}
-            saveHistory={(messages) => saveSession(id, messages)}
-          />
-        ))}
+         {Object.entries(sessions).map(([id, messages]) => (
+           <Tab
+             key={id}
+             open={id === validCurrentTab}
+             history={messages}
+             saveHistory={(messages) => saveSession(id, messages)}
+           />
+         ))}
       </Box>
     </Box>
   );
