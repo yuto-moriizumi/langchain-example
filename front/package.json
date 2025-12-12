@@ -24,7 +24,7 @@
     "duck-duck-scrape": "^2.2.7",
     "langchain": "^1.1.5",
     "markdown-to-jsx": "^9.3.4",
-    "next": "^16.0.9",
+    "next": "^16.0.10",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "uuid": "^13.0.0"
