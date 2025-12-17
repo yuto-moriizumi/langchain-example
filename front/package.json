@@ -30,7 +30,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.0.2",
+    "@types/node": "^25.0.3",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.50.0",
