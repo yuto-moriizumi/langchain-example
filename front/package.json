@@ -20,7 +20,7 @@
     "@langchain/core": "^1.1.26",
     "@langchain/openai": "^1.2.11",
     "@mui/icons-material": "^7.3.8",
-    "@mui/material": "^7.3.6",
+    "@mui/material": "^7.3.9",
     "duck-duck-scrape": "^2.2.7",
     "langchain": "^1.2.29",
     "markdown-to-jsx": "^9.7.6",
