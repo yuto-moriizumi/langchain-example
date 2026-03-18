@@ -22,7 +22,7 @@
     "@mui/icons-material": "^7.3.9",
     "@mui/material": "^7.3.9",
     "duck-duck-scrape": "^2.2.7",
-    "langchain": "^1.2.33",
+    "langchain": "^1.2.34",
     "markdown-to-jsx": "^9.7.9",
     "next": "^16.1.7",
     "react": "^19.2.3",
